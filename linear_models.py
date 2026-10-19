@@ -21,7 +21,7 @@ from grader_contracts.linear_models import (
 
 
 def sigmoid(z):
-    return 1.0 / (1.0 + np.exp(-np.clip(z, -30.0, 30.0))) #
+    return 1 / (1 + np.exp(-z))
 
 
 # loss f
@@ -87,22 +87,22 @@ def train_logistic_classifier(data: ClassificationInput) -> ClassificationResult
     loss_history: list[float] = []
 
     for _ in range(data.epochs):
-        probabilities = sigmoid(x_train @ weights + bias)
-        err = probabilities - y_train
-        loss_history.append(BCE(y_train, probabilities))
+        probs = sigmoid(x_train @ weights + bias)
+        err = probs - y_train
+        loss_history.append(BCE(y_train, probs))
         grad_w = x_train.T @ err / n_samples
         grad_b = float(np.mean(err))
         weights -= data.learning_rate * grad_w
         bias -= data.learning_rate * grad_b
 
-    probabilities = sigmoid(x_test @ weights + bias)
-    predictions = (probabilities >= 0.5).astype(int)
+    probs = sigmoid(x_test @ weights + bias)
+    predictions = (probs >= 0.5).astype(int)
 
     return ClassificationResult(
         weights=weights,
         bias=bias,
         loss_history=loss_history,
-        probabilities=probabilities,
+        probabilities=probs,
         predictions=predictions,
     )
 
